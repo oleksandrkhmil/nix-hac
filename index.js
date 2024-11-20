@@ -101,7 +101,7 @@ function calculateMove(field) {
 
 
     // 2. Движение к ближайшему врагу
-    let closestEnemy = closestEntity(enemies)
+    let closestEnemy = closestEntity(playerRow, playerCol, enemies)
     console.log("closest_enemy", closestEnemy)
 
     if (!closestCoin && !closestEnemy) {
@@ -182,7 +182,7 @@ function calculateMove(field) {
     return { move: ["R", "L", "M"][Math.floor(Math.random() * 3)] };
 }
 
-function closestEntity(coins) {
+function closestEntity(playerRow, playerCol, coins) {
     // 2. Движение к ближайшей монете
     let closestCoin = null;
     let minDistance = Infinity;
