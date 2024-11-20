@@ -14,6 +14,8 @@ app.get('/', (req, res) => {
 
 let index = 0
 
+let borderIndex = 0
+
 app.post('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
 
@@ -26,7 +28,13 @@ app.post('/move', (req, res) => {
 
     console.log('narrowingIn', narrowingIn)
 
-    const move = calculateMove(field, narrowingIn, 1); // TODO ADD BORDER INDEX
+    const narrowingMod = narrowingIn % 20
+    if (narrowingMod === 0) {
+        borderIndex++
+        console.log('borderIndex increase', borderIndex)
+    }
+
+    const move = calculateMove(field, narrowingIn, borderIndex); // TODO ADD BORDER INDEX
     console.log("move", move)
     res.json(move);
 });
