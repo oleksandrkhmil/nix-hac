@@ -20,7 +20,7 @@ app.post('/move', (req, res) => {
     index++;
     console.log(index);
 
-    printTableWithSpaces(field)
+    printTableWithSpaces(copyDeepArray(field))
 
     const move = calculateMove(field);
     console.log("move", move)
@@ -432,3 +432,17 @@ function appendSpaceIfOneChar(arr) {
   
     return arr;
 }
+
+function copyDeepArray(arr) {
+    const copy = [];
+  
+    for (let i = 0; i < arr.length; i++) {
+      if (Array.isArray(arr[i])) {
+        copy.push(copyDeepArray(arr[i]));
+      } else {
+        copy.push(arr[i]);
+      }
+    }
+  
+    return copy;
+  }
