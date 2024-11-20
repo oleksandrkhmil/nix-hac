@@ -124,6 +124,13 @@ function calculateMove(field) {
 
     console.log(path)
 
+    const pathToActionsV2Res = pathToActionsV2(playerDir, path)
+    console.log("pathToActionsV2Res: ", pathToActionsV2Res)
+
+    if (pathToActionsV2Res != '') {
+        return { move: pathToActionsV2Res };
+    }
+
     if (closestCoin) {
         const { row: coinRow, col: coinCol } = closestCoin;
         const dr = coinRow - playerRow;
@@ -300,6 +307,44 @@ function pathToActionsV1(path) {
       }
   
       currentPosition = nextPosition;
+    }
+  
+    return actions;
+}
+
+function pathToActionsV2(currentDirection, path) {
+    let currentPosition = path[0];
+    const actions = [];
+  
+    for (let i = 1; i < path.length; i++) {
+      const nextPosition = path[i];
+      let direction;
+  
+      if (nextPosition[0] < currentPosition[0]) {
+        direction = "W";
+      } else if (nextPosition[0] > currentPosition[0]) {
+        direction = "E";
+      } else if (nextPosition[1] < currentPosition[1]) {
+        direction = "S";
+      } else {
+        direction = "N";
+      }
+  
+      if (direction === currentDirection) {
+        return "M"
+        // actions.push("Move forward " + distance + " units");
+      } else {
+        const clockwiseDirections = ["N", "E", "S", "W"];
+        const currentDirectionIndex = clockwiseDirections.indexOf(currentDirection);
+        const nextDirectionIndex = clockwiseDirections.indexOf(direction);
+        const diff = nextDirectionIndex - currentDirectionIndex;
+  
+        if (diff === 1 || diff === -3) {
+            return "R"
+        } else {
+            return "L"
+        }
+      }
     }
   
     return actions;

@@ -43,14 +43,65 @@ function pathToActionsV1(path) {
     return actions;
 }
 
-const path = [ [ 2, 10 ],
-[ 3, 10 ],
-[ 4, 10 ],
-[ 5, 10 ],
-[ 5, 9 ],
-[ 5, 8 ],
-[ 5, 7 ],
-[ 6, 7 ],
-[ 6, 6 ] ];
+function pathToActionsV2(currentDirection, path) {
+    let currentPosition = path[0];
+    const actions = [];
+  
+    for (let i = 1; i < path.length; i++) {
+      const nextPosition = path[i];
+    //   const distance = Math.abs(nextPosition[0] - currentPosition[0]) + Math.abs(nextPosition[1] - currentPosition[1]);
+      let direction;
+  
+      if (nextPosition[0] < currentPosition[0]) {
+        direction = "W";
+      } else if (nextPosition[0] > currentPosition[0]) {
+        direction = "E";
+      } else if (nextPosition[1] < currentPosition[1]) {
+        direction = "S";
+      } else {
+        direction = "N";
+      }
+  
+      if (direction === currentDirection) {
+        return "M"
+        // actions.push("Move forward " + distance + " units");
+      } else {
+        const clockwiseDirections = ["N", "E", "S", "W"];
+        const currentDirectionIndex = clockwiseDirections.indexOf(currentDirection);
+        const nextDirectionIndex = clockwiseDirections.indexOf(direction);
+        const diff = nextDirectionIndex - currentDirectionIndex;
+  
+        if (diff === 1 || diff === -3) {
+            return "R"
+        //   actions.push("Rotate right");
+        } else {
+            return "L"
+        //   actions.push("Rotate left");
+        }
+  
+        // return ""
+        // actions.push("Move forward " + distance + " units");
+        // currentDirection = direction;
+      }
+  
+    //   currentPosition = nextPosition;
+    }
+  
+    return actions;
+}
 
-console.log(pathToActionsV1(path))
+const path = [
+    // [ 2, 10 ],
+// [ 3, 10 ],
+// [ 4, 10 ],
+// [ 5, 10 ],
+// [ 5, 9 ],
+// [ 5, 8 ],
+// [ 5, 7 ],
+[ 6, 7 ],
+[ 6, 6 ],
+];
+
+// console.log(pathToActionsV1(path))
+console.log(pathToActionsV2("S", path))
+
