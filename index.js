@@ -260,3 +260,47 @@ function waveAlgorithm(grid, start, target) {
     path.push(start);
     return path.reverse();
 }
+
+function pathToActionsV1(path) {
+    let currentPosition = path[0];
+    let currentDirection = "North";
+    const actions = [];
+  
+    for (let i = 1; i < path.length; i++) {
+      const nextPosition = path[i];
+      const distance = Math.abs(nextPosition[0] - currentPosition[0]) + Math.abs(nextPosition[1] - currentPosition[1]);
+      let direction;
+  
+      if (nextPosition[0] < currentPosition[0]) {
+        direction = "West";
+      } else if (nextPosition[0] > currentPosition[0]) {
+        direction = "East";
+      } else if (nextPosition[1] < currentPosition[1]) {
+        direction = "South";
+      } else {
+        direction = "North";
+      }
+  
+      if (direction === currentDirection) {
+        actions.push("Move forward " + distance + " units");
+      } else {
+        const clockwiseDirections = ["North", "East", "South", "West"];
+        const currentDirectionIndex = clockwiseDirections.indexOf(currentDirection);
+        const nextDirectionIndex = clockwiseDirections.indexOf(direction);
+        const diff = nextDirectionIndex - currentDirectionIndex;
+  
+        if (diff === 1 || diff === -3) {
+          actions.push("Rotate right");
+        } else {
+          actions.push("Rotate left");
+        }
+  
+        actions.push("Move forward " + distance + " units");
+        currentDirection = direction;
+      }
+  
+      currentPosition = nextPosition;
+    }
+  
+    return actions;
+}
