@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
     res.send('Hello world!')
 });
 
-app.get('/move', (req, res) => {
+app.post('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
 
     const move = calculateMove(field);
