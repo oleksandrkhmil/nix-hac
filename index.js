@@ -16,6 +16,7 @@ app.get('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
 
     const move = calculateMove(field);
+    console.log(move)
     res.json(move);
 });
 
@@ -66,31 +67,20 @@ function response(value) {
 }
 
 function calculateMove(field) {
-    const field = gameState.field;
-    const narrowingIn = gameState.narrowingIn;
-
-    const directions = {
-        N: { dr: -1, dc: 0 },
-        S: { dr: 1, dc: 0 },
-        W: { dr: 0, dc: -1 },
-        E: { dr: 0, dc: 1 }
-    };
-
-    const player = findEntities(field, "P")[0]; // Мы предполагаем, что игрок всегда один
+    const player = findEntities(field, "P")[0];
     const coins = findEntities(field, "C");
     const enemies = findEntities(field, "E");
-    const asteroids = findEntities(field, "A");
 
+    // Если игрока нет, ничего не делаем
     if (!player) {
-        // Если игрока нет, ничего не делаем
         return { move: "M" };
     }
 
     const { row: playerRow, col: playerCol, value: playerValue } = player;
     const playerDir = playerValue[1]; // Направление игрока
 
-    // 1. Проверка на возможность стрельбы
-    for (let enemy of enemies) {
+       // 1. Проверка на возможность стрельбы
+       for (let enemy of enemies) {
         const { row: enemyRow, col: enemyCol } = enemy;
 
         if (
