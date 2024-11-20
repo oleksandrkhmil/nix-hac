@@ -12,8 +12,15 @@ app.get('/', (req, res) => {
     res.send('Hello world!')
 });
 
+let index = 0
+
 app.post('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
+
+    index++;
+    console.log(index);
+
+    printTableWithSpaces(field)
 
     const move = calculateMove(field);
     console.log("move", move)
@@ -407,4 +414,21 @@ function pathToActionsV3(currentDirection, path) {
             return "L"
         }
     }
+}
+
+function printTableWithSpaces(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        appendSpaceIfOneChar(arr[i])
+        console.log(arr[i].join(" "));
+    }
+}
+
+function appendSpaceIfOneChar(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].length === 1) {
+        arr[i] += " ";
+      }
+    }
+  
+    return arr;
 }

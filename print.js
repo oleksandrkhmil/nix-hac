@@ -1,26 +1,19 @@
-
-function transformMatrix(matrix) {
-    const transformedMatrix = [];
-
-    for (let i = 0; i < matrix.length; i++) {
-      const newRow = [];
-
-      for (let j = 0; j < matrix[i].length; j++) {
-        const currentValue = matrix[i][j];
-        
-        if (currentValue === "A") {
-          newRow.push(1);
-        } else {
-          newRow.push(0);
-        }
-      }
-  
-      transformedMatrix.push(newRow);
+function printTableWithSpaces(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        appendSpaceIfOneChar(arr[i])
+        console.log(arr[i].join(" "));
     }
-  
-    return transformedMatrix;
 }
 
+function appendSpaceIfOneChar(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].length === 1) {
+        arr[i] += " ";
+      }
+    }
+  
+    return arr;
+}
 
 const arr = [
     ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A"],
@@ -38,5 +31,4 @@ const arr = [
     ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A"]
 ];
 
-
-console.log(transformMatrix(arr))
+printTableWithSpaces(arr)
