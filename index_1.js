@@ -109,21 +109,6 @@ function calculateMove(field) {
 
     console.log("closest_coin", closestCoin)
 
-    if (!closestCoin) {
-        return { move: ["R", "L", "M"][Math.floor(Math.random() * 3)] };
-    }
-
-    const matrix = transformMatrix(field)
-
-    const { row: coinRow, col: coinCol } = closestCoin;
-
-    const start = [playerRow, playerCol];
-    const target = [coinRow, coinCol];
-
-    const path = waveAlgorithm(matrix, start, target)
-
-    console.log(path)
-
     if (closestCoin) {
         const { row: coinRow, col: coinCol } = closestCoin;
         const dr = coinRow - playerRow;
@@ -176,87 +161,4 @@ function calculateMove(field) {
 
     // 3. Случайное движение в отсутствие других приоритетов
     return { move: ["R", "L", "M"][Math.floor(Math.random() * 3)] };
-}
-
-function transformMatrix(matrix) {
-    const transformedMatrix = [];
-
-    for (let i = 0; i < matrix.length; i++) {
-      const newRow = [];
-
-      for (let j = 0; j < matrix[i].length; j++) {
-        const currentValue = matrix[i][j];
-        
-        if (currentValue === "A") {
-          newRow.push(1);
-        } else {
-          newRow.push(0);
-        }
-      }
-  
-      transformedMatrix.push(newRow);
-    }
-  
-    return transformedMatrix;
-}
-
-function waveAlgorithm(grid, start, target) {
-    const rows = grid.length;
-    const cols = grid[0].length;
-
-    const directions = [
-        [0, 1],  // праворуч
-        [1, 0],  // вниз
-        [0, -1], // ліворуч
-        [-1, 0]  // вгору
-    ];
-
-    const queue = [start];
-    const distances = Array.from({ length: rows }, () => Array(cols).fill(Infinity));
-    distances[start[0]][start[1]] = 0;
-
-    while (queue.length > 0) {
-        const [x, y] = queue.shift();
-
-        for (const [dx, dy] of directions) {
-            const nx = x + dx;
-            const ny = y + dy;
-
-            if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && grid[nx][ny] === 0) {
-                if (distances[nx][ny] > distances[x][y] + 1) {
-                    distances[nx][ny] = distances[x][y] + 1;
-                    queue.push([nx, ny]);
-                }
-            }
-        }
-    }
-
-    // Відновлення шляху
-    if (distances[target[0]][target[1]] === Infinity) {
-        return null; // Немає шляху
-    }
-
-    const path = [];
-    let [x, y] = target;
-
-    while (distances[x][y] !== 0) {
-        path.push([x, y]);
-        for (const [dx, dy] of directions) {
-            const nx = x + dx;
-            const ny = y + dy;
-
-            if (
-                nx >= 0 && nx < rows &&
-                ny >= 0 && ny < cols &&
-                distances[nx][ny] === distances[x][y] - 1
-            ) {
-                x = nx;
-                y = ny;
-                break;
-            }
-        }
-    }
-
-    path.push(start);
-    return path.reverse();
 }
