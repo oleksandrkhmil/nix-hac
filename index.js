@@ -55,7 +55,7 @@ function findEntities(field, entity) {
     const positions = [];
     for (let row = 0; row < field.length; row++) {
         for (let col = 0; col < field[row].length; col++) {
-            if (field[row][col].includes(entity)) {
+            if (field[row][col][0] == entity) { // FIX
                 positions.push({ row, col, value: field[row][col] });
             }
         }
@@ -109,6 +109,7 @@ function calculateMove(field) {
 
 
     // 2. Движение к ближайшему врагу
+    console.log('enemies', enemies);
     let closestEnemy = closestEntity(playerRow, playerCol, enemies)
     console.log("closest_enemy", closestEnemy)
 
