@@ -28,6 +28,10 @@ app.post('/move', (req, res) => {
 
     console.log('narrowingIn', narrowingIn)
 
+    if (borderIndex == 99) {
+        borderIndex = 1
+    }
+
     const narrowingMod = narrowingIn % 20
     if (narrowingMod === 0) {
         borderIndex++
