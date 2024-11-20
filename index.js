@@ -18,11 +18,15 @@ app.post('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
 
     index++;
-    console.log(index);
+    console.log('index', index);
 
+    console.log('-')
     printTableWithSpaces(copyDeepArray(field))
+    console.log('-')
 
-    const move = calculateMove(field);
+    console.log('narrowingIn', narrowingIn)
+
+    const move = calculateMove(field, narrowingIn, 1); // TODO ADD BORDER INDEX
     console.log("move", move)
     res.json(move);
 });
@@ -73,7 +77,7 @@ function response(value) {
     return { move: value }
 }
 
-function calculateMove(field) {
+function calculateMove(field, narrowingIn, borderIndex) {
     const player = findEntities(field, "P")[0];
     const coins = findEntities(field, "C");
     const enemies = findEntities(field, "E");
@@ -117,7 +121,11 @@ function calculateMove(field) {
         return { move: ["R", "L", "M"][Math.floor(Math.random() * 3)] };
     }
 
-    const matrix = transformMatrix(field)
+    const matrix = transformMatrix(field, borderIndex)
+
+    console.log('-matrix')
+    printTableWithSpaces(copyDeepArray(matrix))
+    console.log('-')
 
     // const { row: coinRow, col: coinCol } = closestCoin;
     const { row: coinRow, col: coinCol } = closestEnemy;
@@ -207,7 +215,7 @@ function closestEntity(playerRow, playerCol, coins) {
     return closestCoin
 }
 
-function transformMatrix(matrix) {
+function transformMatrix(matrix, borderIndex) {
     const transformedMatrix = [];
 
     for (let i = 0; i < matrix.length; i++) {
@@ -215,11 +223,38 @@ function transformMatrix(matrix) {
 
       for (let j = 0; j < matrix[i].length; j++) {
         const currentValue = matrix[i][j];
-        
+
+        if (currentValue[0] === 'P') {
+            newRow.push(0);
+            continue
+        }
+
+        if (i <= borderIndex) {
+            newRow.push(1);
+            continue
+        }
+
+        if (j <= borderIndex) {
+            newRow.push(1);
+            continue
+        }
+
+        if (i >= matrix.length - borderIndex - 1) {
+            newRow.push(1);
+            continue
+        }
+
+        if (j >= matrix[i].length - borderIndex - 1) {
+            newRow.push(1);
+            continue
+        }
+
         if (currentValue === "A") {
-          newRow.push(1);
+            newRow.push(1);
+            continue
         } else {
-          newRow.push(0);
+            newRow.push(0);
+            continue
         }
       }
   
