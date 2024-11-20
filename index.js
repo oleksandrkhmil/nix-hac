@@ -148,6 +148,11 @@ function calculateMove(field, narrowingIn, borderIndex) {
         path = safePlacePath
     }
 
+    if (path.length === 1) {
+        console.log('skip move!')
+        return { skip: 'true' }
+    }
+
     // NEW ALGORITHM
     const pathToActionsV3Res = pathToActionsV3(playerDir, path)
     console.log("pathToActionsV3Res: ", pathToActionsV3Res)
