@@ -50,7 +50,7 @@ app.get('/healthz', (req, res) => {
 
 const PORT = 8000;
 app.listen(PORT, () => {
-    // console.log(`Server started on port ${PORT}`);
+    console.log(`Server started on port ${PORT}`);
 });
 
 /**
