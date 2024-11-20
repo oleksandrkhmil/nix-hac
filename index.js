@@ -97,6 +97,7 @@ function calculateMove(field) {
 
     // 2. Движение к ближайшей монете
     // let closestCoin = closestEntity(coins)
+    let closestCoin = null
     // console.log("closest_coin", closestCoin)
 
 
@@ -110,7 +111,8 @@ function calculateMove(field) {
 
     const matrix = transformMatrix(field)
 
-    const { row: coinRow, col: coinCol } = closestCoin;
+    // const { row: coinRow, col: coinCol } = closestCoin;
+    const { row: coinRow, col: coinCol } = closestEnemy;
 
     const start = [playerRow, playerCol];
     const target = [coinRow, coinCol];
