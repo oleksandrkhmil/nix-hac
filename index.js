@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 
 let index = 0
 
-let borderIndex = 0
+let borderIndex = 1
 
 app.post('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
