@@ -16,7 +16,7 @@ app.get('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
 
     const move = calculateMove(field);
-    console.log(move)
+    console.log("move", move)
     res.json(move);
 });
 
@@ -71,6 +71,8 @@ function calculateMove(field) {
     const coins = findEntities(field, "C");
     const enemies = findEntities(field, "E");
 
+    console.log("player", player)
+
     // Если игрока нет, ничего не делаем
     if (!player) {
         return { move: "M" };
@@ -105,21 +107,53 @@ function calculateMove(field) {
         }
     }
 
+    console.log("closest_coin", closestCoin)
+
     if (closestCoin) {
         const { row: coinRow, col: coinCol } = closestCoin;
         const dr = coinRow - playerRow;
         const dc = coinCol - playerCol;
 
-        if (dr < 0 && playerDir === "N") return { move: "M" };
-        if (dr > 0 && playerDir === "S") return { move: "M" };
-        if (dc < 0 && playerDir === "W") return { move: "M" };
-        if (dc > 0 && playerDir === "E") return { move: "M" };
+        if (dr < 0 && playerDir === "N") {
+            console.log('move N');
+            return { move: "M" };
+        }
+
+        if (dr > 0 && playerDir === "S") {
+            console.log('move S');
+            return { move: "M" };
+        }
+
+        if (dc < 0 && playerDir === "W") {
+            console.log('move W');
+            return { move: "M" };
+        }
+
+        if (dc > 0 && playerDir === "E") {
+            console.log('move E');
+            return { move: "M" };
+        }
 
         // Поворот к монете
-        if (dr < 0) return { move: playerDir === "E" ? "L" : "R" };
-        if (dr > 0) return { move: playerDir === "W" ? "L" : "R" };
-        if (dc < 0) return { move: playerDir === "S" ? "L" : "R" };
-        if (dc > 0) return { move: playerDir === "N" ? "L" : "R" };
+        if (dr < 0) {
+            console.log('rotate to E');
+            return { move: playerDir === "E" ? "L" : "R" };
+        }
+
+        if (dr > 0) {
+            console.log('rotate to W');
+            return { move: playerDir === "W" ? "L" : "R" };
+        }
+
+        if (dc < 0) {
+            console.log('rotate to S');
+            return { move: playerDir === "S" ? "L" : "R" };
+        }
+
+        if (dc > 0) {
+            console.log('rotate to N');
+            return { move: playerDir === "N" ? "L" : "R" };
+        }
     }
 
     // 3. Случайное движение в отсутствие других приоритетов
