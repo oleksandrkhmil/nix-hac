@@ -229,6 +229,11 @@ function transformMatrix(matrix, borderIndex) {
             continue
         }
 
+        if (currentValue[0] === 'E') {
+            newRow.push(0);
+            continue
+        }
+
         if (i <= borderIndex) {
             newRow.push(1);
             continue
