@@ -59,16 +59,39 @@ function waveAlgorithm(grid, start, target) {
     return path.reverse();
 }
 
-// Приклад використання
-const grid = [
-    [0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 0],
-    [0, 0, 0, 1, 0],
-    [0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0]
-];
-const start = [0, 0];
-const target = [4, 4];
+// // Приклад використання
+// const grid = [
+//     [0, 0, 0, 0, 0],
+//     [0, 1, 1, 1, 0],
+//     [0, 0, 0, 1, 0],
+//     [0, 1, 0, 0, 0],
+//     [0, 0, 0, 1, 0]
+// ];
+// const start = [0, 0];
+// const target = [4, 4];
 
-const shortestPath = waveAlgorithm(grid, start, target);
-console.log(shortestPath);
+// const shortestPath = waveAlgorithm(grid, start, target);
+// console.log(shortestPath);
+
+const array = [
+    [0,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,0,1,1,1,1],
+    [1,1,0,0,0,0,0,0,0,0,0,1,1],
+    [1,1,0,0,0,0,0,0,0,0,0,1,1],
+    [1,1,0,0,0,0,1,0,0,0,0,1,1],
+    [1,1,0,0,0,0,0,0,0,0,0,1,1],
+    [1,1,0,0,1,0,0,0,1,0,0,1,1],
+    [1,1,0,0,0,0,0,0,0,0,0,1,1],
+    [1,1,0,0,0,0,1,0,0,0,0,1,1],
+    [1,1,0,0,0,0,0,0,0,0,0,1,1],
+    [1,1,0,0,0,0,0,0,0,0,0,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,0],
+]
+
+const start = [0, 0];
+const target = [12, 12];
+
+
+console.log(waveAlgorithm(array, start, target))
+console.log(array[0][0], array[12][12])
