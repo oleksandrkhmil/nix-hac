@@ -134,25 +134,28 @@ function calculateMove(field) {
             return { move: "M" };
         }
 
+
         // Поворот к монете
         if (dr < 0) {
-            console.log('rotate to E');
-            return { move: playerDir === "E" ? "L" : "R" };
+            console.log('rotate to N');
+            // return { move: playerDir === "E" ? "L" : "R" };
         }
 
         if (dr > 0) {
-            console.log('rotate to W');
-            return { move: playerDir === "W" ? "L" : "R" };
+            console.log('rotate to S');
+            // return { move: playerDir === "W" ? "L" : "R" };
         }
 
         if (dc < 0) {
-            console.log('rotate to S');
-            return { move: playerDir === "S" ? "L" : "R" };
+            console.log('rotate to W');
+            // return { move: playerDir === "S" ? "L" : "R" };
+            return { move: playerDir === "S" ? "R" : "L" };
         }
 
         if (dc > 0) {
-            console.log('rotate to N');
-            return { move: playerDir === "N" ? "L" : "R" };
+            console.log('rotate to E');
+            // return { move: playerDir === "N" ? "L" : "R" };
+            return { move: playerDir === "N" ? "R" : "L" };
         }
     }
 
