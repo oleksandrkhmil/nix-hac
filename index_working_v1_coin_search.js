@@ -96,15 +96,20 @@ function calculateMove(field) {
     }
 
     // 2. Движение к ближайшей монете
-    // let closestCoin = closestEntity(coins)
-    // console.log("closest_coin", closestCoin)
+    let closestCoin = null;
+    let minDistance = Infinity;
+    for (let coin of coins) {
+        const { row: coinRow, col: coinCol } = coin;
+        const distance = Math.abs(playerRow - coinRow) + Math.abs(playerCol - coinCol); // Манхэттенское расстояние
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestCoin = coin;
+        }
+    }
 
+    console.log("closest_coin", closestCoin)
 
-    // 2. Движение к ближайшему врагу
-    let closestEnemy = closestEntity(enemies)
-    console.log("closest_enemy", closestEnemy)
-
-    if (!closestCoin && !closestEnemy) {
+    if (!closestCoin) {
         return { move: ["R", "L", "M"][Math.floor(Math.random() * 3)] };
     }
 
@@ -180,21 +185,6 @@ function calculateMove(field) {
 
     // 3. Случайное движение в отсутствие других приоритетов
     return { move: ["R", "L", "M"][Math.floor(Math.random() * 3)] };
-}
-
-function closestEntity(coins) {
-    // 2. Движение к ближайшей монете
-    let closestCoin = null;
-    let minDistance = Infinity;
-    for (let coin of coins) {
-        const { row: coinRow, col: coinCol } = coin;
-        const distance = Math.abs(playerRow - coinRow) + Math.abs(playerCol - coinCol); // Манхэттенское расстояние
-        if (distance < minDistance) {
-            minDistance = distance;
-            closestCoin = coin;
-        }
-    }
-    return closestCoin
 }
 
 function transformMatrix(matrix) {
