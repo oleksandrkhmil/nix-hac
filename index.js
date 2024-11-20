@@ -15,13 +15,7 @@ app.get('/', (req, res) => {
 app.get('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
 
-    console.log(field)
-    console.log(narrowingIn)
-    console.log(gameId)
-
-    console.log(req.body)
-
-    const move = calculateMove(gameState);
+    const move = calculateMove(field);
     res.json(move);
 });
 
