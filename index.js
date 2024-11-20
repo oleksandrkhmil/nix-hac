@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors())
 
 app.get('/', (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     res.send('Hello world!')
 });
 
@@ -20,13 +20,13 @@ app.post('/move', (req, res) => {
     const { field, narrowingIn, gameId } = req.body;
 
     index++;
-    console.log('index', index);
+    // console.log('index', index);
 
-    console.log('-')
+    // console.log('-')
     printTableWithSpaces(copyDeepArray(field))
-    console.log('-')
+    // console.log('-')
 
-    console.log('narrowingIn', narrowingIn)
+    // console.log('narrowingIn', narrowingIn)
 
     if (narrowingIn >= 99) {
         borderIndex = 1
@@ -35,22 +35,22 @@ app.post('/move', (req, res) => {
     const narrowingMod = narrowingIn % 20
     if (narrowingMod === 0) {
         borderIndex++
-        console.log('borderIndex increase', borderIndex)
+        // console.log('borderIndex increase', borderIndex)
     }
 
     const move = calculateMove(field, narrowingIn, borderIndex); // TODO ADD BORDER INDEX
-    console.log("move", move)
+    // console.log("move", move)
     res.json(move);
 });
 
 app.get('/healthz', (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     res.send({status: 'OK'})
 });
 
 const PORT = 8000;
 app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
+    // console.log(`Server started on port ${PORT}`);
 });
 
 /**
@@ -94,7 +94,7 @@ function calculateMove(field, narrowingIn, borderIndex) {
     const coins = findEntities(field, "C");
     const enemies = findEntities(field, "E");
 
-    console.log("player", player)
+    // console.log("player", player)
 
     // Если игрока нет, ничего не делаем
     if (!player) {
@@ -121,13 +121,13 @@ function calculateMove(field, narrowingIn, borderIndex) {
     // 2. Движение к ближайшей монете
     // let closestCoin = closestEntity(coins)
     let closestCoin = null
-    // console.log("closest_coin", closestCoin)
+    // // console.log("closest_coin", closestCoin)
 
 
     // 2. Движение к ближайшему врагу
-    console.log('enemies', enemies);
+    // console.log('enemies', enemies);
     let closestEnemy = closestEntity(playerRow, playerCol, enemies)
-    console.log("closest_enemy", closestEnemy)
+    // console.log("closest_enemy", closestEnemy)
 
     if (!closestCoin && !closestEnemy) {
         return { move: ["R", "L", "M"][Math.floor(Math.random() * 3)] };
@@ -135,9 +135,9 @@ function calculateMove(field, narrowingIn, borderIndex) {
 
     const matrix = transformMatrix(field, borderIndex)
 
-    console.log('-matrix')
+    // console.log('-matrix')
     printTableWithSpaces(copyDeepArray(matrix))
-    console.log('-')
+    // console.log('-')
 
     // const { row: coinRow, col: coinCol } = closestCoin;
     const { row: coinRow, col: coinCol } = closestEnemy;
@@ -147,34 +147,34 @@ function calculateMove(field, narrowingIn, borderIndex) {
 
     let path = waveAlgorithm(matrix, start, target)
 
-    console.log(path)
+    // console.log(path)
 
     // SEEK SAFE PLACE
     if (path === null) {
         // const safePlace = findSafePlace(transformMatrix(field, 0), [playerRow, playerCol], borderIndex)
         const withoutBorders = transformMatrix(field, 0);
         const safePlace = findNearestZero(withoutBorders, [playerRow, playerCol], borderIndex)
-        console.log('safePlace', safePlace)
+        // console.log('safePlace', safePlace)
 
 
-        console.log('-safe-matrix')
+        // console.log('-safe-matrix')
         printTableWithSpaces(copyDeepArray(withoutBorders))
-        console.log('-')
+        // console.log('-')
 
         const safePlacePath = waveAlgorithm(withoutBorders, start, safePlace)
-        console.log('safePlacePath', safePlacePath)
+        // console.log('safePlacePath', safePlacePath)
 
         path = safePlacePath
     }
 
     if (path.length === 1) {
-        console.log('skip move!')
+        // console.log('skip move!')
         return { skip: 'true' }
     }
 
     // NEW ALGORITHM
     const pathToActionsV3Res = pathToActionsV3(playerDir, path)
-    console.log("pathToActionsV3Res: ", pathToActionsV3Res)
+    // console.log("pathToActionsV3Res: ", pathToActionsV3Res)
 
     if (pathToActionsV3Res != '') {
         return { move: pathToActionsV3Res };
@@ -187,45 +187,45 @@ function calculateMove(field, narrowingIn, borderIndex) {
         const dc = coinCol - playerCol;
 
         if (dr < 0 && playerDir === "N") {
-            console.log('move N');
+            // console.log('move N');
             return { move: "M" };
         }
 
         if (dr > 0 && playerDir === "S") {
-            console.log('move S');
+            // console.log('move S');
             return { move: "M" };
         }
 
         if (dc < 0 && playerDir === "W") {
-            console.log('move W');
+            // console.log('move W');
             return { move: "M" };
         }
 
         if (dc > 0 && playerDir === "E") {
-            console.log('move E');
+            // console.log('move E');
             return { move: "M" };
         }
 
 
         // Поворот к монете
         if (dr < 0) {
-            console.log('rotate to N');
+            // console.log('rotate to N');
             // return { move: playerDir === "E" ? "L" : "R" };
         }
 
         if (dr > 0) {
-            console.log('rotate to S');
+            // console.log('rotate to S');
             // return { move: playerDir === "W" ? "L" : "R" };
         }
 
         if (dc < 0) {
-            console.log('rotate to W');
+            // console.log('rotate to W');
             // return { move: playerDir === "S" ? "L" : "R" };
             return { move: playerDir === "S" ? "R" : "L" };
         }
 
         if (dc > 0) {
-            console.log('rotate to E');
+            // console.log('rotate to E');
             // return { move: playerDir === "N" ? "L" : "R" };
             return { move: playerDir === "N" ? "R" : "L" };
         }
@@ -453,23 +453,23 @@ function pathToActionsV3(currentDirection, path) {
   
     // for (let i = 1; i < path.length; i++) {
     const nextPosition = path[1];
-    console.log('currentDirection', currentDirection)
-    console.log('currentPosition', currentPosition)
-    console.log('nextPosition', nextPosition)
+    // console.log('currentDirection', currentDirection)
+    // console.log('currentPosition', currentPosition)
+    // console.log('nextPosition', nextPosition)
 
     let direction;
 
     if (nextPosition[0] < currentPosition[0]) {
-        console.log('goal direction', 'N')
+        // console.log('goal direction', 'N')
         direction = "N";
     } else if (nextPosition[0] > currentPosition[0]) {
-        console.log('goal direction', 'S')
+        // console.log('goal direction', 'S')
         direction = "S";
     } else if (nextPosition[1] < currentPosition[1]) {
-        console.log('goal direction', 'W')
+        // console.log('goal direction', 'W')
         direction = "W";
     } else {
-        console.log('goal direction', 'E')
+        // console.log('goal direction', 'E')
         direction = "E";
     }
   
@@ -481,8 +481,8 @@ function pathToActionsV3(currentDirection, path) {
         const nextDirectionIndex = clockwiseDirections.indexOf(direction);
         const diff = nextDirectionIndex - currentDirectionIndex;
 
-        console.log('currentDirectionIndex', currentDirectionIndex)
-        console.log('nextDirectionIndex', nextDirectionIndex)
+        // console.log('currentDirectionIndex', currentDirectionIndex)
+        // console.log('nextDirectionIndex', nextDirectionIndex)
   
         if (diff === 1 || diff === -3) {
             return "R"
@@ -495,7 +495,7 @@ function pathToActionsV3(currentDirection, path) {
 function printTableWithSpaces(arr) {
     for (let i = 0; i < arr.length; i++) {
         appendSpaceIfOneChar(arr[i])
-        console.log(arr[i].join(" "));
+        // console.log(arr[i].join(" "));
     }
 }
 
