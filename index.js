@@ -124,13 +124,15 @@ function calculateMove(field) {
 
     console.log(path)
 
-    const pathToActionsV2Res = pathToActionsV2(playerDir, path)
-    console.log("pathToActionsV2Res: ", pathToActionsV2Res)
+    // NEW ALGORITHM
+    const pathToActionsV3Res = pathToActionsV3(playerDir, path)
+    console.log("pathToActionsV3Res: ", pathToActionsV3Res)
 
-    if (pathToActionsV2Res != '') {
-        return { move: pathToActionsV2Res };
+    if (pathToActionsV3Res != '') {
+        return { move: pathToActionsV3Res };
     }
 
+    // OLD
     if (closestCoin) {
         const { row: coinRow, col: coinCol } = closestCoin;
         const dr = coinRow - playerRow;
@@ -348,4 +350,49 @@ function pathToActionsV2(currentDirection, path) {
     }
   
     return actions;
+}
+
+
+function pathToActionsV3(currentDirection, path) {
+    let currentPosition = path[0];
+  
+    // for (let i = 1; i < path.length; i++) {
+    const nextPosition = path[1];
+    console.log('currentDirection', currentDirection)
+    console.log('currentPosition', currentPosition)
+    console.log('nextPosition', nextPosition)
+
+    let direction;
+
+    if (nextPosition[0] < currentPosition[0]) {
+        console.log('goal direction', 'N')
+        direction = "N";
+    } else if (nextPosition[0] > currentPosition[0]) {
+        console.log('goal direction', 'S')
+        direction = "S";
+    } else if (nextPosition[1] < currentPosition[1]) {
+        console.log('goal direction', 'W')
+        direction = "W";
+    } else {
+        console.log('goal direction', 'E')
+        direction = "E";
+    }
+  
+    if (direction === currentDirection) {
+        return "M"
+    } else {
+        const clockwiseDirections = ["N", "E", "S", "W"];
+        const currentDirectionIndex = clockwiseDirections.indexOf(currentDirection);
+        const nextDirectionIndex = clockwiseDirections.indexOf(direction);
+        const diff = nextDirectionIndex - currentDirectionIndex;
+
+        console.log('currentDirectionIndex', currentDirectionIndex)
+        console.log('nextDirectionIndex', nextDirectionIndex)
+  
+        if (diff === 1 || diff === -3) {
+            return "R"
+        } else {
+            return "L"
+        }
+    }
 }
