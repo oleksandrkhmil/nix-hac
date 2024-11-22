@@ -17,28 +17,30 @@ let index = 0
 let borderIndex = 1
 
 app.post('/move', (req, res) => {
-    const { field, narrowingIn, gameId } = req.body;
+    // const { field, narrowingIn, gameId } = req.body;
 
-    index++;
-    // console.log('index', index);
+    // index++;
+    // // console.log('index', index);
 
-    // console.log('-')
-    printTableWithSpaces(copyDeepArray(field))
-    // console.log('-')
+    // // console.log('-')
+    // printTableWithSpaces(copyDeepArray(field))
+    // // console.log('-')
 
-    // console.log('narrowingIn', narrowingIn)
+    // // console.log('narrowingIn', narrowingIn)
 
-    if (narrowingIn >= 99) {
-        borderIndex = 1
-    }
+    // if (narrowingIn >= 99) {
+    //     borderIndex = 1
+    // }
 
-    const narrowingMod = narrowingIn % 20
-    if (narrowingMod === 0) {
-        borderIndex++
-        // console.log('borderIndex increase', borderIndex)
-    }
+    // const narrowingMod = narrowingIn % 20
+    // if (narrowingMod === 0) {
+    //     borderIndex++
+    //     // console.log('borderIndex increase', borderIndex)
+    // }
 
-    const move = calculateMove(field, narrowingIn, borderIndex); // TODO ADD BORDER INDEX
+    const move = getMove(req.body);
+
+    // const move = calculateMove(field, narrowingIn, borderIndex);
     // console.log("move", move)
     res.json(move);
 });
@@ -52,6 +54,94 @@ const PORT = 8000;
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
+
+function getMove({ field, narrowingIn, gameId }) {
+    const player = findEntities(field, "P")[0];
+    const coins = findEntities(field, "C");
+    const enemies = findEntities(field, "E");
+
+    if (!player) {
+        return { move: "M" };
+    }
+
+    const { row: playerRow, col: playerCol, value: playerValue } = player;
+    const playerDir = playerValue[1]; // Направление игрока
+
+    // 1. Проверка на возможность стрельбы
+    for (let enemy of enemies) {
+        const { row: enemyRow, col: enemyCol } = enemy;
+
+        if (
+            (playerDir === "N" && playerCol === enemyCol && playerRow > enemyRow && playerRow - enemyRow <= 4) ||
+            (playerDir === "S" && playerCol === enemyCol && playerRow < enemyRow && enemyRow - playerRow <= 4) ||
+            (playerDir === "W" && playerRow === enemyRow && playerCol > enemyCol && playerCol - enemyCol <= 4) ||
+            (playerDir === "E" && playerRow === enemyRow && playerCol < enemyCol && enemyCol - playerCol <= 4)
+        ) {
+            return { move: "F" };
+        }
+    }
+
+    // 2. Нахождение текущего состояния границы
+    const realBorderNarrowing = getBorderNarrowing(narrowingIn);
+    const shouldRunFromBorderNarrowing = getShouldRunFromBorderNarrowing(narrowingIn);
+    const dangerBorderNarrowing = realBorderNarrowing + shouldRunFromBorderNarrowing;
+
+    // 3. Нахождение ближайшего противника
+    const closestEnemy = closestEntity(playerRow, playerCol, enemies);
+    const { row: closestEnemyRow, col: closestEnemyCol } = closestEnemy;
+
+    // 4. Нахождение безопасного пути к ближайшему противнику
+    const safeMatrixWithEnemyFire = transformMatrixWithEnemyFire(field, dangerBorderNarrowing);
+    const safePathToEnemy = waveAlgorithm(safeMatrixWithEnemyFire, [playerRow, playerCol], [closestEnemyRow, closestEnemyCol]);
+
+    // 5. Путь к ближайшему противнику
+    if (safePathToEnemy !== null && safePathToEnemy.length > 1) {
+        const path = pathToActionsV3(playerDir, safePathToEnemy);
+        if (path != '') return { move: path };
+    }
+
+    // 6. Побег от сужения границы опасаясь огня противника если возможно
+    const matrix = transformMatrix(field, realBorderNarrowing);
+    const isSafeCurrently = isSafeRightNow(playerRow, playerCol, dangerBorderNarrowing, matrix);
+    if (!isSafeCurrently) {
+        // 6.1 Безопасный побег
+        const matrixWithEnemyFire = transformMatrixWithEnemyFire(field, realBorderNarrowing);
+        const safePlace = findNearestZero(matrixWithEnemyFire, [playerRow, playerCol], dangerBorderNarrowing);
+        if (safePlace !== null) {
+            const safePlacePath = waveAlgorithm(matrixWithEnemyFire, start, safePlace);
+            if (safePlacePath !== null && safePlacePath.length > 1) {
+                const path = pathToActionsV3(playerDir, path);
+                if (path != '') return { move: path };
+            }
+        }
+
+        // 6.2 Побег с риском
+        const riskySafePlace = findNearestZero(matrix, [playerRow, playerCol], dangerBorderNarrowing);
+        if (riskySafePlace !== null) {
+            const safePlacePath = waveAlgorithm(matrix, start, riskySafePlace);
+            if (safePlacePath !== null && safePlacePath.length > 1) {
+                const path = pathToActionsV3(playerDir, path);
+                if (path != '') return { move: path };
+            }
+        }
+
+        // 6.3 Рискнуть и атаковать
+        const lastStandPathToEnemy = waveAlgorithm(matrix, [playerRow, playerCol], [closestEnemyRow, closestEnemyCol]);
+        if (lastStandPathToEnemy !== null && lastStandPathToEnemy.length > 1) {
+            const path = pathToActionsV3(playerDir, lastStandPathToEnemy);
+            if (path != '') return { move: path };
+        }
+    }
+
+    // 7. Повернуться в сторону ближайшего противника, но не идти
+    const pathToEnemy = waveAlgorithm(matrix, [playerRow, playerCol], [closestEnemyRow, closestEnemyCol]);
+    if (pathToEnemy !== null && pathToEnemy.length > 1) {
+        const path = pathToActionsV3(playerDir, lastStandPathToEnemy);
+        if (path != '' && path != 'M') return { move: path };
+    }
+
+    return { skip: true }
+}
 
 /**
  * Find entity by key
@@ -80,6 +170,94 @@ function findEntities(field, entity) {
     return positions;
 }
 
+function getBorderNarrowing(step) {
+    if (step >= 100) {
+        return 0;
+    }
+
+    if (step <= 0) {
+        return 5;
+    }
+
+    return 5 - Math.ceil(step / 20); // Current border narrowingcurrent
+}
+
+function getShouldRunFromBorderNarrowing(step) {
+    const left = step % 20; // Steps left to border narrowing
+    return left > 0 && left <= 7 ? 1 : 0; // Should run from border narrowing
+}
+
+function transformMatrixWithEnemyFire(matrix, borderIndex) {
+    const height = matrix.length;
+    const width = matrix[0].length;
+    const result = Array.from({length: height}, _ => Array.from({length: width}, _ => 0));
+
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix[i].length; j++) {
+        const currentValue = matrix[i][j];
+
+        if (currentValue[0] === 'P') {
+            result[i][j] = 0;
+            continue
+        }
+
+        if (currentValue[0] === 'E') {
+            result[i][j] = 0;
+
+            if (currentValue[1] === 'N') {
+                for (let k = 1; k < 5; k++) {
+                    if (i - k >= 0) result[i - k][j] = 1;
+                }
+            }
+            if (currentValue[1] === 'S') {
+                for (let k = 1; k < 5; k++) {
+                    if (i + k < height) result[i + k][j] = 1;
+                }
+            }
+            if (currentValue[1] === 'W') {
+                for (let k = 1; k < 5; k++) {
+                    if (j - k >= 0) result[i][j - k] = 1;
+                }
+            }
+            if (currentValue[1] === 'E') {
+                for (let k = 1; k < 5; k++) {
+                    if (j + k < width) result[i][j + k] = 1;
+                }
+            }
+
+            continue
+        }
+
+        if (i <= borderIndex) {
+            result[i][j] = 1;
+            continue
+        }
+
+        if (j <= borderIndex) {
+            result[i][j] = 1;
+            continue
+        }
+
+        if (i >= matrix.length - borderIndex - 1) {
+            result[i][j] = 1;
+            continue
+        }
+
+        if (j >= matrix[i].length - borderIndex - 1) {
+            result[i][j] = 1;
+            continue
+        }
+
+        if (currentValue === "A") {
+            result[i][j] = 1;
+            continue
+        }
+      }
+    }
+  
+    return result;
+}
+
 // Accepts:
 // R - Rotate right. Spaceship turns to the right side, staying in the same cell.
 // L - Rotate left. Spaceship turns to the left side, staying in the same cell.
@@ -87,6 +265,10 @@ function findEntities(field, entity) {
 // F - Fire. Blast 4 cells in front of your ship.
 function response(value) {
     return { move: value }
+}
+
+function isSafeRightNow(row, col, borderIndex, matrix) {
+    return row > borderIndex && col > borderIndex && row < matrix.length - borderIndex - 1 && col < matrix[0].length - borderIndex - 1
 }
 
 function calculateMove(field, narrowingIn, borderIndex) {
@@ -104,8 +286,8 @@ function calculateMove(field, narrowingIn, borderIndex) {
     const { row: playerRow, col: playerCol, value: playerValue } = player;
     const playerDir = playerValue[1]; // Направление игрока
 
-       // 1. Проверка на возможность стрельбы
-       for (let enemy of enemies) {
+    // 1. Проверка на возможность стрельбы
+    for (let enemy of enemies) {
         const { row: enemyRow, col: enemyCol } = enemy;
 
         if (
