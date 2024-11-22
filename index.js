@@ -85,9 +85,9 @@ function getMove({ field, narrowingIn, gameId }) {
     const realBorderNarrowing = getBorderNarrowing(narrowingIn);
     const shouldRunFromBorderNarrowing = getShouldRunFromBorderNarrowing(narrowingIn);
     const dangerBorderNarrowing = realBorderNarrowing + shouldRunFromBorderNarrowing;
-    console.log('realBorderNarrowing', realBorderNarrowing)
-    console.log('shouldRunFromBorderNarrowing', shouldRunFromBorderNarrowing)
-    console.log('dangerBorderNarrowing', dangerBorderNarrowing)
+    // console.log('realBorderNarrowing', realBorderNarrowing)
+    // console.log('shouldRunFromBorderNarrowing', shouldRunFromBorderNarrowing)
+    // console.log('dangerBorderNarrowing', dangerBorderNarrowing)
 
     // 3. Нахождение ближайшего противника
     const closestEnemy = closestEntity(playerRow, playerCol, enemies);
