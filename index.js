@@ -113,7 +113,7 @@ function getMove({ field, narrowingIn, gameId }) {
         if (safePlace !== null) {
             const safePlacePath = waveAlgorithm(matrixWithEnemyFire, [playerRow, playerCol], safePlace);
             if (safePlacePath !== null && safePlacePath.length > 1) {
-                const path = pathToActionsV3(playerDir, path);
+                const path = pathToActionsV3(playerDir, safePlacePath);
                 if (path != '') return { move: path };
             }
         }
@@ -123,7 +123,7 @@ function getMove({ field, narrowingIn, gameId }) {
         if (riskySafePlace !== null) {
             const safePlacePath = waveAlgorithm(matrix, [playerRow, playerCol], riskySafePlace);
             if (safePlacePath !== null && safePlacePath.length > 1) {
-                const path = pathToActionsV3(playerDir, path);
+                const path = pathToActionsV3(playerDir, safePlacePath);
                 if (path != '') return { move: path };
             }
         }
