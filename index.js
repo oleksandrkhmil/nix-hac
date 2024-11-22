@@ -111,7 +111,7 @@ function getMove({ field, narrowingIn, gameId }) {
         const matrixWithEnemyFire = transformMatrixWithEnemyFire(field, realBorderNarrowing);
         const safePlace = findNearestZero(matrixWithEnemyFire, [playerRow, playerCol], dangerBorderNarrowing);
         if (safePlace !== null) {
-            const safePlacePath = waveAlgorithm(matrixWithEnemyFire, start, safePlace);
+            const safePlacePath = waveAlgorithm(matrixWithEnemyFire, [playerRow, playerCol], safePlace);
             if (safePlacePath !== null && safePlacePath.length > 1) {
                 const path = pathToActionsV3(playerDir, path);
                 if (path != '') return { move: path };
@@ -121,7 +121,7 @@ function getMove({ field, narrowingIn, gameId }) {
         // 6.2 Побег с риском
         const riskySafePlace = findNearestZero(matrix, [playerRow, playerCol], dangerBorderNarrowing);
         if (riskySafePlace !== null) {
-            const safePlacePath = waveAlgorithm(matrix, start, riskySafePlace);
+            const safePlacePath = waveAlgorithm(matrix, [playerRow, playerCol], riskySafePlace);
             if (safePlacePath !== null && safePlacePath.length > 1) {
                 const path = pathToActionsV3(playerDir, path);
                 if (path != '') return { move: path };
