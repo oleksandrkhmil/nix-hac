@@ -136,7 +136,7 @@ function getMove({ field, narrowingIn, gameId }) {
     // 7. Повернуться в сторону ближайшего противника, но не идти
     const pathToEnemy = waveAlgorithm(matrix, [playerRow, playerCol], [closestEnemyRow, closestEnemyCol]);
     if (pathToEnemy !== null && pathToEnemy.length > 1) {
-        const path = pathToActionsV3(playerDir, lastStandPathToEnemy);
+        const path = pathToActionsV3(playerDir, pathToEnemy);
         if (path != '' && path != 'M') return { move: path };
     }
 
